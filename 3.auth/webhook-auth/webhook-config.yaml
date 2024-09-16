@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Config
+clusters:
+  - name: webhook-auth-example
+    cluster:
+      server: https://minikube/validate-token/
+      # server: https://control-plane.minikube.internal:10443/validate-token # the kube-apiserver cannot use cluster-dns
+      insecure-skip-tls-verify: true
+users:
+  - name: kube-apiserver
+contexts:
+- context:
+    cluster: webhook-auth-example
+    user: kube-apiserver
+  name: authn
+current-context: authn
