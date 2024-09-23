@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  schedulerName: my-custom-scheduler
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
+  restartPolicy: Always

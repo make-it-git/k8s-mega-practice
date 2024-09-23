@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-scheduler
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-scheduler
+  template:
+    metadata:
+      labels:
+        app: simple-scheduler
+    spec:
+      containers:
+      - name: simple-scheduler
+        image: simple-scheduler:latest
+        imagePullPolicy: Never
+      serviceAccountName: simple-scheduler
