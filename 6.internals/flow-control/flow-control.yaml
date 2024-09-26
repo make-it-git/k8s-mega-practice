@@ -1,0 +1,123 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: ns1
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: ns2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: ns1
+  name: reader
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: user1-reader
+  namespace: ns1
+subjects:
+- kind: User
+  name: user1
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: ns2
+  name: reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: user1-reader
+  namespace: ns2
+subjects:
+- kind: User
+  name: user1
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: flowcontrol.apiserver.k8s.io/v1
+kind: PriorityLevelConfiguration
+metadata:
+ name: slurm-example
+spec:
+ type: Limited
+ limited:
+   nominalConcurrencyShares: 3
+   limitResponse:
+     # queuing:
+     #   handSize: 1
+     #   queueLengthLimit: 1
+     #   queues: 1
+     # type: Queue
+     type: Reject
+---
+apiVersion: flowcontrol.apiserver.k8s.io/v1
+kind: FlowSchema
+metadata:
+ name: slurm-example
+spec:
+ distinguisherMethod:
+   type: ByUser
+ matchingPrecedence: 2
+ priorityLevelConfiguration:
+   name: slurm-example
+ rules:
+   - resourceRules:
+       - clusterScope: true
+         apiGroups:
+           - '*'
+         namespaces:
+           - 'ns1'
+         resources:
+           - '*'
+         verbs:
+           - '*'
+     subjects:
+       - user:
+           name: user1
+         kind: User
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: test-admin
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "services"]
+    verbs: ["get", "list"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: test-rbac
+subjects:
+- kind: User
+  name: user1
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: test-admin
+  apiGroup: rbac.authorization.k8s.io

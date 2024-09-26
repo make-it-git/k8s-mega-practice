@@ -3,7 +3,6 @@ kind: Pod
 metadata:
   name: nginx
 spec:
-  schedulerName: my-custom-scheduler
   containers:
   - image: nginx
     name: nginx
