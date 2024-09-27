@@ -8,10 +8,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - keycloak.s063012.edu.slurm.io
+      - keycloak.s000000.edu.slurm.io
       secretName: domain-name-secret
   rules:
-    - host: keycloak.s063012.edu.slurm.io
+    - host: keycloak.s000000.edu.slurm.io
       http:
         paths:
         - path: /
