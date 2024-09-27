@@ -8,10 +8,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - longhorn.s063012.edu.slurm.io
+      - longhorn.s000000.edu.slurm.io
       secretName: domain-name-secret
   rules:
-    - host: longhorn.s063012.edu.slurm.io
+    - host: longhorn.s000000.edu.slurm.io
       http:
         paths:
         - path: /
