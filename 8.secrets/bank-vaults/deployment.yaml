@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      annotations:
+        vault.security.banzaicloud.io/vault-addr: https://vault.vault-operator:8200
+        vault.security.banzaicloud.io/vault-env-from-path: secret/kv/data/app/prod
+        vault.security.banzaicloud.io/vault-tls-secret: vault-tls
+      labels:
+        app: app
+    spec:
+      containers:
+        - image: nginx
+          imagePullPolicy: Always
+          name: app
